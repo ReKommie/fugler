@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Poulí fugleovervåkning</title>
+        <meta charset="utf-8">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+        <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+        <link rel="icon" href="img/logo.png">
+        <style>
+            * {font-family: "Century Gothic",sans-serif;}
+            body {background-color: #EFEFEF; margin: 0; text-align: center;}
+            #content {width: 100%; margin: auto; overflow: hidden;}
+            #titleBox {background-color: white; padding: 5px; width: 100%; margin: 0;}
+            #logo {height: 40px;}
+            #title {display: inline;}
+            #menu li {list-style-type: none; margin: 0; display: inline; margin-right: 80px;}
+            #menu a {font-size: 1.5em; text-decoration: none; color: #464646; border-radius: 5px; padding: 10px;}
+            #menu a:hover {background-color: #EFEFEF; color: black; transition-duration: 0.3s;}
+            #frontPage {width: 100%;}
+            #frontPic {width: 100%;}
+            #main {width: 80%; margin: auto;}
+            #main p {font-size: 1.2em;}
+            .div {margin-bottom: 50px;}
+            #historikk_table {width: 600px; margin: auto;}
+            #infoRow {font-weight: bold;}
+
+        </style>
+    </head>
+    <body>
+        <div id="content">
+            <div id="titleBox">
+                <ul id="menu">
+                    <li><img id="logo" src="img/logo.png" alt="logo"></li>
+                    <li><h1 id="title">Poulí fugleovervåkning</h1></li>
+                    <li><a href="#om">Om oss</a></li>
+                    <li><a href="#historikk">Historikk</a></li>
+                </ul>
+            </div>
+            <div id="frontPage">
+                <img id="frontPic" src="img/fugl.jpg"  />
+            </div>
+            <div id="main">
+                <div id="om" class="div">
+                    <h2>Om oss</h2>
+                    <p>Dette systemet er designet av Alexander, Anders, Asta, Helene, Ludvik, Sara og Sondre, som er førsteårsstudenter på ELSYS ved NTNU, etter oppdrag fra TrønderEnergi.</p>
+                </div>
+                <div id="historikk" class="div">
+                    <h2>Historikk</h2>
+                    <p>Heii, her kommer historikk.</p>
+                    <table id="historikk_table">
+                        <tr id="infoRow">
+                            <td>Dato/klokkeslett</td>
+                            <td>Høyde over bakken</td>
+                            <td>Mer info?</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>    
+        </div>
+        <script>
+            $(document).ready(function() {
+                var bird = false;  // Ikke i bruk enda
+
+                /* ----- Rask innføring i klasser/objekter -----
+                Et objekt er en samling av egenskaper (variabler) og metoder (funksjoner). Objekter ligger nært sånn vi oppfatter virkeligheten. La oss ta eksempel i en radio. Den har noen egenskaper: en størrelse, et materiale, maks volum, strømforbruk osv. Samtidig kan den også gjøre ting vi at vi interagerer med den: vi kan skru den på, endre volum, skifte kanal osv. Slik kunne vi skrevet objektet radio i javaScript:
+
+                var radio = {
+					størrelse: 45,
+					pris: 599,
+					volum: 50,
+					maksVolum: 100,
+					volumOpp: function() {
+						if(volum < maksVolum){
+							this.volum++;
+						}
+					},
+					volumNed: function() {
+						if(volum > 0){
+							this.volum--;
+						}
+					}
+                }
+
+                Her er eksempel på hvordan koden ville fungert:
+
+                radio.størrelse;
+                >  45
+                radio.volum;
+                >  50
+                radio.volumOpp();
+                radio.volum;
+                >  51
+                radio.volum = 100;
+                radio.volum;
+                >  100
+				
+
+				Klasser er en oppskrift på et objekt, hvor egenskapene og metodene er de samme for alle objektene laget ut av klassen, men selve verdiene kan variere. Hvis vi fortsetter på radio-eksempelet, kan radio være en klasse. Noen radioer har liten størrelse, andre har stor, men alle har en. Alle radioer kan man skru lyden opp og ned på, men de kan ha forskjellige grenser for maks- og min-volum. Slik kunne en radioklasse sett ut i javaScript:
+
+				function Radio(størrelse,pris,maksVolum) {
+					this.størrelse = størrelse;
+					this.pris = pris;
+					this.maksVolum = maksVolum;
+					this.volum = this.maksVolum / 2;
+					this.volumOpp = function() {
+						if(volum < maksVolum){
+							this.volum++;
+						}
+					}
+					this.volumNed = function() {
+						if(volum > 0){
+							this.volum--;
+						}
+				}
+
+				Nå kan vi lage et objekt ut av klassen og lagre det i en variabel:
+
+				var radio1 = new Radio(45,599,100);
+
+				Denne variabelen er nå et objekt med størrelse 45, pris 599 og maksVolum 100, volum satt til halve maksvolumet (50), og metodene volumOpp og volumNed. Altså vil denne variabelen nå fungere akkurat likt som radio-variabelen vi lagde i det første eksempelet:
+
+				radio1.størrelse;
+                >  45
+                radio1.volum;
+                >  50
+                radio1.volumOpp();
+                radio1.volum;
+                >  51
+                radio1.volum = 100;
+                radio1.volum;
+                >  100	
+
+				
+				Foreløpig virker det kanskje helt unødvendig å lage en slik klasse som vi lager objekter ut av, det var mye mindre å skrive når vi bare lagde radio-objektet uten å gå igjennom noen klasser. Poenget ligger i at hver gang vi skal lage en radio til med litt annerledes spesifikasjoner, vil vi ha spart mye arbeid. På denne måten kan vi også med sikkerhet vite at alle objektene som kommer fra én klasse vil ha alle de samme egenskapene og metodene. Vi kan lage en radio til veldig enkelt nå:
+
+				var radio2 = new Radio(30,1299,500);
+
+				Objektet radio2 har nå størrelse 30, pris 1299 og maksVolum 500, volum satt til halve maksvolumet (250), og metodene volumOpp og volumNed.
+
+				I koden lagrer jeg alle objekter av en klasse i arrays (lister) som dere kjenner fra Python:
+
+				var radioer = [radio1, radio2];
+
+				radioer[0].størrelse;
+				>  45
+
+                */
+                
+                function Observation(date, time, height, more) {  // Klasse for en ny observasjon
+                	// Definerer observasjonens datamedlemmer/egenskaper:
+                    this.index = obsIndex;
+                    this.date = date;
+                    this.time = time;
+                    this.height = height;
+                    this.more = more;
+
+                    this.addRow = function() {  // Metode som lager en rad i historikk-tabellen tilhørende observasjonen
+                        var tr = document.createElement('tr');
+                        tr.setAttribute('id','row' + this.index);
+                        var tdDate = document.createElement('td');
+                        tdDate.innerHTML = this.date.dmy + " / " + this.time.time;
+                        tr.appendChild(tdDate);
+                        var tdHeight = document.createElement('td');
+                        tdHeight.innerHTML = this.height + ' m';
+                        tr.appendChild(tdHeight);
+                        var tdMore = document.createElement('td');
+                        tdMore.innerHTML = this.more;
+                        tr.appendChild(tdMore);
+                        document.getElementById('historikk_table').appendChild(tr);
+                    }
+                }
+
+                function printAllObs(obs) {
+                	console.log(obs);
+                	for(var i = obs.length-1; i >= 0; i--){
+                		obs[i].addRow();
+                		console.log(i);
+                		console.log(obs[i]);
+                	}
+                }
+
+                var allObs = [];
+                var obsIndex = 0;
+                function newObs(date, time, height, more) {
+                    allObs[obsIndex] = new Observation(date, time, height, more);
+                    obsIndex++;
+                }
+
+                function DateO(year,month,day) {  // Datoklasse
+                    this.y = year;
+                    this.m = month;
+                    this.d = day;
+                    this.dmy = this.d + "." + this.m + "." + this.y;
+                    this.logdate = function(){
+                        console.log("Dato: " + this.dmy);
+                    }
+                }
+
+                function Time(hours,minutes,seconds) {  // Tidsklasse
+                    var intHrs = Number(hours) + 2;  // Retter opp tidssonen
+                    var strHrs = String(intHrs);  // Gjør det om til en string igjen så vi kan finne antall karakterer, og legge til en null foran hvis timetallet kun består av ett siffer (6 -> 06, slik at det står 06:30 og ikke 6:30)
+                    this.hrs = (strHrs.length == 1) ? "0"+strHrs : strHrs;  // Dette måten å lage en variabel ut fra en betingelse kalles ternary/conditional operator: https://www.w3schools.com/jsref/jsref_operators.asp  (scroll ned til "Conditional (Ternary) Operator")
+                    this.mins = minutes;
+                    this.secs = seconds;
+                    this.time = this.hrs + ":" + this.mins + ":" + this.secs;
+                }
+                
+                function handleDate(dateTime) {  // Denne funksjonen tar inn datostrengen og returnerer den som datoen og tiden som brukbare objekter
+                	//Eksempel på en dato-/tidsstreng: 2018-10-24T11:46:22.783632364Z
+                    dateTime = dateTime.split('T');  // dateTime = [2018-10-24, 11:46:22.783632364Z]
+                    var date = dateTime[0];  // date = 2018-10-24
+                    date = date.split('-');  // date = [2018, 10, 24]
+                    date = new DateO(date[0],date[1],date[2]);  // Oppretter et nytt objekt fra datoklassen med parametre year = date[0] = 2018, month = date[1] = 10 og day = date[2] = 24
+                    var time = dateTime[1];  // time = 11:46:22.783632364Z
+                    time = time.split('.')[0];  // time = 11:46:22
+                    time = time.split(':');  // time = [11, 46, 22]
+                    time = new Time(time[0],time[1],time[2]);  // Oppretter et nytt objekt fra tidsklassen med parametre hours = time[0] = 11, minutes = time[1] = 46 og seconds = time[2] = 22
+                    return [date, time];  // Returnerer dato- og tidsobjekt i et array
+                }
+
+                function handleJSON(jsonObs) {
+                    for(var i = 0; i < jsonObs.length-1; i++){
+                        obj = jsonObs[i];
+                        var dateTime = handleDate(obj.metadata.time);
+                        var date = dateTime[0];
+                        var time = dateTime[1];
+                        newObs(date,time,"height","more??");
+                    }
+                    printAllObs(allObs);
+                }
+
+                function decodeJSON(jsonArr) {
+                    jsonObs = [];
+                    for(var i = 0; i < jsonArr.length-1; i++){
+                        obj = JSON.parse(jsonArr[i]);
+                        jsonObs.push(obj);
+                    }
+                    return jsonObs;
+                }
+
+                function openFile(file){  // Denne funksjonen åpner ei tekstfil med AJAX, her er det mye du ikke trenger å forstå
+                    var txt = '';
+                    var xmlhttp = new XMLHttpRequest();
+                    xmlhttp.onreadystatechange = function(){
+                      if(xmlhttp.status == 200 && xmlhttp.readyState == 4){
+                        txt = xmlhttp.responseText;  // Lagrer rein tekst i txt-variabelen
+                        jsonArr = txt.split("\n");  // jsonArr blir nå et array hvor hver linje i tekstfila blir et eget element (i datalog-fila er hver linje et nytt JSON-objekt)
+                        handleJSON(decodeJSON(jsonArr));
+                      }
+                    };
+                    xmlhttp.open("GET",file,true);
+                    xmlhttp.send();
+                }
+
+                openFile("datalog.txt");
+            });
+        </script>
+    </body>
+</html>
