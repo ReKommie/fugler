@@ -11,6 +11,7 @@
             * {font-family: "Century Gothic",sans-serif;}
             body {background-color: #EFEFEF; margin: 0; text-align: center;}
             #content {width: 100%; margin: auto; overflow: hidden;}
+            .hide {display: none;}
             #titleBox {background-color: white; padding: 5px; width: 100%; margin: 0;}
             #logo {height: 40px;}
             #title {display: inline;}
@@ -22,18 +23,22 @@
             #main {width: 80%; margin: auto;}
             #main p {font-size: 1.2em;}
             .div {margin-bottom: 50px;}
+            .statOp {display: inline;}
+            #statSearch span {margin-left: 20px;}
+            .stat {font-weight: bold;}
             #historikk_table {width: 600px; margin: auto;}
             #infoRow {font-weight: bold;}
 
         </style>
     </head>
     <body>
-        <div id="content">
+        <div id="content" class="hide">
             <div id="titleBox">
                 <ul id="menu">
                     <li><img id="logo" src="img/logo.png" alt="logo"></li>
-                    <li><h1 id="title">Poulí fugleovervåkning</h1></li>
+                    <li id="titleLi"><h1 id="title">Poulí fugleovervåkning</h1></li>
                     <li><a href="#om">Om oss</a></li>
+                    <li><a href="#statistikk">Statistikk</a></li>
                     <li><a href="#historikk">Historikk</a></li>
                 </ul>
             </div>
@@ -45,9 +50,23 @@
                     <h2>Om oss</h2>
                     <p>Dette systemet er designet av Alexander, Anders, Asta, Helene, Ludvik, Sara og Sondre, som er førsteårsstudenter på ELSYS ved NTNU, etter oppdrag fra TrønderEnergi.</p>
                 </div>
+                <div id="statistikk" class="div">
+                	<h2>Statistikk</h2>
+                    <div id="statSearch">
+                        <span>Dag: <select id="daySel" class="dateSel"></select></span>
+                        <span>Måned: <select id="monthSel" class="dateSel"></select></span>
+                        <span>År: <select id="yearSel" class="dateSel"></select></span>
+                        <span><input id="limitHist" type="checkbox" class="dateSel">Begrens historikk til søket</span>
+                    </div>
+                    <div id="statsDisp">
+                        <p>I denne perioden er det observert fugler i området <span id="amt" class="stat"></span> ganger.</p>
+                        <p id="percent" class="hide">Dette er <span id="pcnt" class="stat"></span>% av alle fuglene systemet noen gang har observert.</p>
+                        <p>De første fuglene blei observert <span id="firstDate" class="stat"></span> klokka <span id="firstTime" class="stat"></span>, og den siste <span id="lastDate" class="stat"></span> klokka <span id="lastTime" class="stat"></span>.</p>
+                        <p id="feedback" class="hide"></p>
+                    </div>
+                </div>
                 <div id="historikk" class="div">
                     <h2>Historikk</h2>
-                    <p>Heii, her kommer historikk.</p>
                     <table id="historikk_table">
                         <tr id="infoRow">
                             <td>Dato/klokkeslett</td>
@@ -60,93 +79,19 @@
         </div>
         <script>
             $(document).ready(function() {
-                var bird = false;  // Ikke i bruk enda
+                // ---- PASSORD (Rappo ingen rapping!) ----
+                var password = "954";
+                var input = sessionStorage.getItem("oldPass");
 
-                /* ----- Rask innføring i klasser/objekter -----
-                Et objekt er en samling av egenskaper (variabler) og metoder (funksjoner). Objekter ligger nært sånn vi oppfatter virkeligheten. La oss ta eksempel i en radio. Den har noen egenskaper: en størrelse, et materiale, maks volum, strømforbruk osv. Samtidig kan den også gjøre ting vi at vi interagerer med den: vi kan skru den på, endre volum, skifte kanal osv. Slik kunne vi skrevet objektet radio i javaScript:
-
-                var radio = {
-					størrelse: 45,
-					pris: 599,
-					volum: 50,
-					maksVolum: 100,
-					volumOpp: function() {
-						if(volum < maksVolum){
-							this.volum++;
-						}
-					},
-					volumNed: function() {
-						if(volum > 0){
-							this.volum--;
-						}
-					}
+                while(password != input){
+                    input = prompt("Skriv inn koden");
                 }
 
-                Her er eksempel på hvordan koden ville fungert:
-
-                radio.størrelse;
-                >  45
-                radio.volum;
-                >  50
-                radio.volumOpp();
-                radio.volum;
-                >  51
-                radio.volum = 100;
-                radio.volum;
-                >  100
-				
-
-				Klasser er en oppskrift på et objekt, hvor egenskapene og metodene er de samme for alle objektene laget ut av klassen, men selve verdiene kan variere. Hvis vi fortsetter på radio-eksempelet, kan radio være en klasse. Noen radioer har liten størrelse, andre har stor, men alle har en. Alle radioer kan man skru lyden opp og ned på, men de kan ha forskjellige grenser for maks- og min-volum. Slik kunne en radioklasse sett ut i javaScript:
-
-				function Radio(størrelse,pris,maksVolum) {
-					this.størrelse = størrelse;
-					this.pris = pris;
-					this.maksVolum = maksVolum;
-					this.volum = this.maksVolum / 2;
-					this.volumOpp = function() {
-						if(volum < maksVolum){
-							this.volum++;
-						}
-					}
-					this.volumNed = function() {
-						if(volum > 0){
-							this.volum--;
-						}
-				}
-
-				Nå kan vi lage et objekt ut av klassen og lagre det i en variabel:
-
-				var radio1 = new Radio(45,599,100);
-
-				Denne variabelen er nå et objekt med størrelse 45, pris 599 og maksVolum 100, volum satt til halve maksvolumet (50), og metodene volumOpp og volumNed. Altså vil denne variabelen nå fungere akkurat likt som radio-variabelen vi lagde i det første eksempelet:
-
-				radio1.størrelse;
-                >  45
-                radio1.volum;
-                >  50
-                radio1.volumOpp();
-                radio1.volum;
-                >  51
-                radio1.volum = 100;
-                radio1.volum;
-                >  100	
-
-				
-				Foreløpig virker det kanskje helt unødvendig å lage en slik klasse som vi lager objekter ut av, det var mye mindre å skrive når vi bare lagde radio-objektet uten å gå igjennom noen klasser. Poenget ligger i at hver gang vi skal lage en radio til med litt annerledes spesifikasjoner, vil vi ha spart mye arbeid. På denne måten kan vi også med sikkerhet vite at alle objektene som kommer fra én klasse vil ha alle de samme egenskapene og metodene. Vi kan lage en radio til veldig enkelt nå:
-
-				var radio2 = new Radio(30,1299,500);
-
-				Objektet radio2 har nå størrelse 30, pris 1299 og maksVolum 500, volum satt til halve maksvolumet (250), og metodene volumOpp og volumNed.
-
-				I koden lagrer jeg alle objekter av en klasse i arrays (lister) som dere kjenner fra Python:
-
-				var radioer = [radio1, radio2];
-
-				radioer[0].størrelse;
-				>  45
-
-                */
+                sessionStorage.setItem("oldPass", input);
+                $("#content").removeClass("hide");
                 
+
+                // ----OBSERVASJONSBEHANDLING----
                 function Observation(date, time, height, more) {  // Klasse for en ny observasjon
                 	// Definerer observasjonens datamedlemmer/egenskaper:
                     this.index = obsIndex;
@@ -158,6 +103,7 @@
                     this.addRow = function() {  // Metode som lager en rad i historikk-tabellen tilhørende observasjonen
                         var tr = document.createElement('tr');
                         tr.setAttribute('id','row' + this.index);
+                        tr.setAttribute('class','added');
                         var tdDate = document.createElement('td');
                         tdDate.innerHTML = this.date.dmy + " / " + this.time.time;
                         tr.appendChild(tdDate);
@@ -171,12 +117,10 @@
                     }
                 }
 
-                function printAllObs(obs) {
-                	console.log(obs);
+                function printObs(obs) {  // Funksjon som printer alle observasjonene i omvendt rekkefølge (nyest først)
+                    $(".added").remove();
                 	for(var i = obs.length-1; i >= 0; i--){
                 		obs[i].addRow();
-                		console.log(i);
-                		console.log(obs[i]);
                 	}
                 }
 
@@ -192,13 +136,13 @@
                     this.m = month;
                     this.d = day;
                     this.dmy = this.d + "." + this.m + "." + this.y;
-                    this.logdate = function(){
+                    this.logDate = function(){
                         console.log("Dato: " + this.dmy);
                     }
                 }
 
                 function Time(hours,minutes,seconds) {  // Tidsklasse
-                    var intHrs = Number(hours) + 2;  // Retter opp tidssonen
+                    var intHrs = Number(hours) + 1;  // Retter opp tidssonen
                     var strHrs = String(intHrs);  // Gjør det om til en string igjen så vi kan finne antall karakterer, og legge til en null foran hvis timetallet kun består av ett siffer (6 -> 06, slik at det står 06:30 og ikke 6:30)
                     this.hrs = (strHrs.length == 1) ? "0"+strHrs : strHrs;  // Dette måten å lage en variabel ut fra en betingelse kalles ternary/conditional operator: https://www.w3schools.com/jsref/jsref_operators.asp  (scroll ned til "Conditional (Ternary) Operator")
                     this.mins = minutes;
@@ -216,24 +160,167 @@
                     time = time.split('.')[0];  // time = 11:46:22
                     time = time.split(':');  // time = [11, 46, 22]
                     time = new Time(time[0],time[1],time[2]);  // Oppretter et nytt objekt fra tidsklassen med parametre hours = time[0] = 11, minutes = time[1] = 46 og seconds = time[2] = 22
-                    return [date, time];  // Returnerer dato- og tidsobjekt i et array
+                    return {date: date, time: time};  // Returnerer dato- og tidsobjekt i et array
                 }
+
+
+                // ---- STATISTIKK ----
+
+                function addOpt(idSel,idOp,value,text){  // Funksjon som legger til et alternativ i en dropdown-liste med id = idSel
+                    var opt = document.createElement("option");  // Lager det nye elementet
+                    opt.setAttribute("id",idOp);  // Gir elementet id = idOp (fra parameter)
+                    opt.setAttribute("value",value);  // Gir elementet verdi = value (fra parameter). Dette er det verdien dropdown-lista blir satt til når dette alternativet er valgt
+                    if(text == "" || text == null){  // Hvis parameteren text ikke er spesifisert i funksjonskallet, skal den settes lik value
+                        text = value;
+                    }
+                    opt.innerHTML = text;  // Gir elementet en innerHTML (teksten som vises for alternativet i dropdown-lista, delen av alternativet som brukeren ser og velger) lik text (som er lik value hvis text ikke er spesifisert)
+                    document.getElementById(idSel).appendChild(opt);  // Legger elementet til i dropdown-lista med id = idSel (fra parameter)
+                }
+
+                // Legger til alle dags-, måneds- og årsalternativene i dropdownene i datovelgeren
+
+                addOpt("daySel","dayId", "", "Alle dager");
+                for(var i = 1; i <= 31; i++){
+                    addOpt("daySel","dayOpt" + i, i);
+                }
+
+                const monthNames = ["januar", "februar", "mars", "april", "mai", "juni", "juli", "august", "september", "oktober", "november", "desember"];
+                addOpt("monthSel","monthId", "", "Alle måneder");
+                for(var i = 1; i <= monthNames.length; i++){
+                    addOpt("monthSel","monthOpt" + i, i, monthNames[i-1]);
+                }
+
+                addOpt("yearSel","yearId", "", "Alle år");
+                function addYearOpts(earliest){  // Denne funksjonen tar inn det første året en fugl ble observert og legger til alle år fra og med det året til og med nåværende år i årvelgeren
+                    var date = new Date();
+                    var year = date.getFullYear();
+                    var idInt = 1;
+                    for(var i = year; i >= earliest; i--){
+                        addOpt("yearSel","yearOpt" + idInt, i);
+                        idInt++;
+                    }
+                }
+
+                function getTargetObs(obs,d,m,y){  // Denne funksjonen returnerer alle observasjoner som tilfredsstiller datosøket
+                    var statObs = obs.slice();  // statObs settes lik en kopi av obs (alle observasjoner noensinne) for å ikke endre på selve obs-arrayet når vi endrer på statObs
+                    if(y != ""){  // Kodeblokk vil kjøre hvis et år er spesifisert i søket
+                        for(var i = 0; i < statObs.length; i++){  // Kjører gjennom alle observasjonene i statObs
+                            if(Number(y) != Number(statObs[i].date.y)){  // Kodeblokk kjører hvis året fra søket ikke er lik året til gjeldende observasjon
+                                statObs.splice(i,1);  // Observasjonen in question fjernes fra lista
+                                i--;  // Nå som vi har fjernet observasjonen med indeks i, vi den neste observasjonen i lista være det nye elementet med indeks i. Dette elementet vil bli hoppet over når i økes i neste iterasjon om vi ikke reduserer indeksen med 1 her
+                            }
+                        }
+                    }
+                    // De to neste if-blokkene har nøyaktig samme logikk som den over, bare at det her filtreres bort etter søkemåned og søkedag i stedet for søkeår
+                    if(m != ""){
+                        for(var i = 0; i < statObs.length; i++){
+                            if(Number(m) != Number(statObs[i].date.m)){
+                                statObs.splice(i,1);
+                                i--;
+                            }
+                        }
+                    }
+                    if(d != ""){
+                        for(var i = 0; i < statObs.length; i++){
+                            if(Number(d) != Number(statObs[i].date.d)){
+                                statObs.splice(i,1);
+                                i--;
+                            }
+                        }
+                    }
+                    return statObs;
+                }
+
+                // Definerer forskjellige HTML-elementer som konstanter (fungerer helt likt som variabler, det er bare litt annerledes for datamaskinen)
+                const amtEl = document.getElementById("amt");
+                const pcntEl = document.getElementById("pcnt");
+                const firstDateEl = document.getElementById("firstDate");
+                const firstTimeEl = document.getElementById("firstTime");
+                const lastDateEl = document.getElementById("lastDate");
+                const lastTimeEl = document.getElementById("lastTime");
+
+                function updateStats(obs,ofObs,showPcnt){
+                    if(obs.length == 0){
+                        $("#statsDisp").addClass("hide");
+                        document.getElementById("feedback").innerHTML = "Det ble ikke observert noen fugler som tilfredsstiller søket ditt.";
+                        $("#feedback").removeClass("hide");
+                    }
+                    else {
+                        $("#statsDisp").removeClass("hide");
+                        $("#feedback").addClass("hide");
+                        amt = obs.length;
+                        first = obs[0];
+                        last = obs[obs.length-1];
+                        amtEl.innerHTML = amt;
+                        if(showPcnt){
+                            pcnt = Math.round(amt/ofObs.length*100);
+                            pcntEl.innerHTML = pcnt;
+                            $("#percent").removeClass("hide");
+                        }
+                        else {
+                            $("#percent").addClass("hide");
+                        }
+                        firstDateEl.innerHTML = first.date.dmy;
+                        firstTimeEl.innerHTML = first.time.time;
+                        lastDateEl.innerHTML = last.date.dmy;
+                        lastTimeEl.innerHTML = last.time.time;
+                    } 
+                }
+
+                function searchStats(ofObs){
+                    var d = document.getElementById("daySel").value;
+                    var m = document.getElementById("monthSel").value;
+                    var y = document.getElementById("yearSel").value;
+                    var statObs;
+                    var showPcnt;
+                    if(d == "" && m == "" && y == ""){
+                        statObs = ofObs.slice();
+                        showPcnt = false;
+                    }
+                    else {
+                        statObs = getTargetObs(ofObs,d,m,y);
+                        showPcnt = true;
+                    }
+                    var limitHist = document.getElementById("limitHist").checked;
+                    updateStats(statObs,ofObs,showPcnt);
+                    if(limitHist){
+                        printObs(statObs);
+                    }
+                    else {
+                        printObs(allObs);
+                    }
+                }
+
+                $(".dateSel").change(function(){
+                    searchStats(allObs);
+                });
+
+
+                // ---- FIL-/JSON-BEHANDLING ----
 
                 function handleJSON(jsonObs) {
                     for(var i = 0; i < jsonObs.length-1; i++){
                         obj = jsonObs[i];
                         var dateTime = handleDate(obj.metadata.time);
-                        var date = dateTime[0];
-                        var time = dateTime[1];
+                        var date = dateTime.date;
+                        var time = dateTime.time;
                         newObs(date,time,"height","more??");
                     }
-                    printAllObs(allObs);
+                    addYearOpts(allObs[0].date.y);
+                    searchStats(allObs);
+                    printObs(allObs);
                 }
 
                 function decodeJSON(jsonArr) {
                     jsonObs = [];
                     for(var i = 0; i < jsonArr.length-1; i++){
-                        obj = JSON.parse(jsonArr[i]);
+                        obj = jsonArr[i];
+                        obj = obj.split("}");
+                        useObj = "";
+                        for(var j = 0; j < obj.length-1; j++){
+                            useObj += obj[j] + "}";
+                        }
+                        obj = JSON.parse(useObj);
                         jsonObs.push(obj);
                     }
                     return jsonObs;
@@ -244,7 +331,7 @@
                     var xmlhttp = new XMLHttpRequest();
                     xmlhttp.onreadystatechange = function(){
                       if(xmlhttp.status == 200 && xmlhttp.readyState == 4){
-                        txt = xmlhttp.responseText;  // Lagrer rein tekst i txt-variabelen
+                        txt = xmlhttp.responseText;  // Lagrer rein tekst fra fila i txt-variabelen
                         jsonArr = txt.split("\n");  // jsonArr blir nå et array hvor hver linje i tekstfila blir et eget element (i datalog-fila er hver linje et nytt JSON-objekt)
                         handleJSON(decodeJSON(jsonArr));
                       }
