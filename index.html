@@ -11,6 +11,8 @@
             * {font-family: "Century Gothic",sans-serif;}
             body {background-color: #EFEFEF; margin: 0; text-align: center;}
             #content {width: 100%; margin: auto; overflow: hidden;}
+            input {font-size: 15px;}
+            input[type=number] {width: 40px;}
             .hide {display: none;}
             #titleBox {background-color: white; padding: 5px; width: 100%; margin: 0;}
             #logo {height: 40px;}
@@ -28,10 +30,11 @@
             .stat {font-weight: bold;}
             #historikk_table {width: 600px; margin: auto;}
             #infoRow {font-weight: bold;}
-
+            #bottomLogo {position: fixed; bottom: 0; right: 10px; height: 50px;}
         </style>
     </head>
     <body>
+        <img id="bottomLogo" src="img/logo.png" alt="logo" />
         <div id="content" class="hide">
             <div id="titleBox">
                 <ul id="menu">
@@ -43,7 +46,7 @@
                 </ul>
             </div>
             <div id="frontPage">
-                <img id="frontPic" src="img/fugl.jpg"  />
+                <img id="frontPic" src="img/alt7.png"  />
             </div>
             <div id="main">
                 <div id="om" class="div">
@@ -62,11 +65,12 @@
                         <p>I denne perioden er det observert fugler i området <span id="amt" class="stat"></span> ganger.</p>
                         <p id="percent" class="hide">Dette er <span id="pcnt" class="stat"></span>% av alle fuglene systemet noen gang har observert.</p>
                         <p>De første fuglene blei observert <span id="firstDate" class="stat"></span> klokka <span id="firstTime" class="stat"></span>, og den siste <span id="lastDate" class="stat"></span> klokka <span id="lastTime" class="stat"></span>.</p>
-                        <p id="feedback" class="hide"></p>
                     </div>
+                    <p id="feedback" class="hide"></p>
                 </div>
                 <div id="historikk" class="div">
                     <h2>Historikk</h2>
+                    <p>Vis <input type="number" id="perPage" value="10" min="1"> observasjoner per side | <button id="showAll">Vis alle</button></p>
                     <table id="historikk_table">
                         <tr id="infoRow">
                             <td>Dato/klokkeslett</td>
@@ -74,11 +78,23 @@
                             <td>Mer info?</td>
                         </tr>
                     </table>
+                    <p id="pageSel">Side <input type="number" id="page" value="1" min="1"> av <span id="numPages"></span></p>
                 </div>
             </div>    
         </div>
         <script>
             $(document).ready(function() {
+                // ---- LOGOEN I NEDRE HJØRNE ----
+                $("#bottomLogo").hide();
+                $(window).scroll(function(){
+                    if($(window).scrollTop() > 0){
+                        $("#bottomLogo").show(500);
+                    }
+                    else {
+                        $("#bottomLogo").hide(500);
+                    }
+                });
+
                 // ---- PASSORD (Rappo ingen rapping!) ----
                 var password = "954";
                 var input = sessionStorage.getItem("oldPass");
@@ -91,7 +107,7 @@
                 $("#content").removeClass("hide");
                 
 
-                // ----OBSERVASJONSBEHANDLING----
+                // ---- OBSERVASJONSBEHANDLING ----
                 function Observation(date, time, height, more) {  // Klasse for en ny observasjon
                 	// Definerer observasjonens datamedlemmer/egenskaper:
                     this.index = obsIndex;
@@ -103,7 +119,6 @@
                     this.addRow = function() {  // Metode som lager en rad i historikk-tabellen tilhørende observasjonen
                         var tr = document.createElement('tr');
                         tr.setAttribute('id','row' + this.index);
-                        tr.setAttribute('class','added');
                         var tdDate = document.createElement('td');
                         tdDate.innerHTML = this.date.dmy + " / " + this.time.time;
                         tr.appendChild(tdDate);
@@ -115,13 +130,6 @@
                         tr.appendChild(tdMore);
                         document.getElementById('historikk_table').appendChild(tr);
                     }
-                }
-
-                function printObs(obs) {  // Funksjon som printer alle observasjonene i omvendt rekkefølge (nyest først)
-                    $(".added").remove();
-                	for(var i = obs.length-1; i >= 0; i--){
-                		obs[i].addRow();
-                	}
                 }
 
                 var allObs = [];
@@ -164,9 +172,96 @@
                 }
 
 
+                // ---- HISTORIKK ----
+                function clearHist(){
+                    $("#historikk_table tr:not(#infoRow)").remove();
+                }
+
+                function printObs(obs) {  // Funksjon som printer alle observasjonene (fra parameter) til historikk-tabellen
+                    clearHist();
+                    for(var i = 0; i < obs.length; i++){
+                        obs[i].addRow();
+                    }
+                }
+
+                var curObs;
+                var curPages;
+                var curDisp;
+
+                function histPages(obs,perPage) {
+                    modObs = obs.slice();
+                    var pages = []
+                    var page = 0;
+                    for(var i = 0; i < obs.length; i+=perPage){
+                        pages[page] = modObs.splice(0,perPage);
+                        page++;
+                    }
+                    return pages;
+                }
+
+                function printPage(pages,page) {
+                    page--;
+                    printObs(pages[page]);
+                }
+
+                function perPageChange(obs){
+                    curDisp = "pages";
+                    $("#pageSel").removeClass("hide");
+                    const perPageEl = document.getElementById("perPage");
+                    var perPage = Number(perPageEl.value);
+                    if(perPage < 1){
+                        perPage = 1;
+                        perPageEl.value = 1;
+                    }
+                    if(perPage % 1 != 0){perPage = Math.floor(perPage);}
+                    curPages = histPages(obs,perPage);
+                    document.getElementById("numPages").innerHTML = curPages.length;
+                    document.getElementById("page").value = 1;
+                    pageChange(curPages);
+                }
+
+                function pageChange(pages){
+                    const pageEl = document.getElementById("page");
+                    var page = Number(pageEl.value);
+                    if(page < 1){
+                        page = 1;
+                        pageEl.value = "1";
+                    }
+                    printPage(pages,page);
+                }
+
+                function printAll(obs){
+                    curDisp = "all";
+                    $("#pageSel").addClass("hide");
+                    document.getElementById("perPage").value = "";
+                    printObs(obs);
+                }
+
+                function handlePrinting(obs,disp){
+                    if(disp == "pages"){
+                        perPageChange(obs);
+                    }
+                    else {
+                        printAll(obs);
+                    }
+                }
+
+                $("#showAll").click(function(){
+                    printAll(curObs);
+                });
+
+                $("#perPage").change(function(){
+                    perPageChange(curObs);
+                });
+
+                $("#page").change(function(){
+                    pageChange(curPages);
+                });
+
+
                 // ---- STATISTIKK ----
 
-                function addOpt(idSel,idOp,value,text){  // Funksjon som legger til et alternativ i en dropdown-liste med id = idSel
+                function addOpt(idSel,idOp,value,text) {  // Funksjon som legger til et alternativ i en dropdown-liste med id = idSel-parameter
                     var opt = document.createElement("option");  // Lager det nye elementet
                     opt.setAttribute("id",idOp);  // Gir elementet id = idOp (fra parameter)
                     opt.setAttribute("value",value);  // Gir elementet verdi = value (fra parameter). Dette er det verdien dropdown-lista blir satt til når dette alternativet er valgt
@@ -240,31 +335,23 @@
                 const lastTimeEl = document.getElementById("lastTime");
 
                 function updateStats(obs,ofObs,showPcnt){
-                    if(obs.length == 0){
-                        $("#statsDisp").addClass("hide");
-                        document.getElementById("feedback").innerHTML = "Det ble ikke observert noen fugler som tilfredsstiller søket ditt.";
-                        $("#feedback").removeClass("hide");
+                    $("#statsDisp").removeClass("hide");
+                    amt = obs.length;
+                    first = obs[amt-1];
+                    last = obs[0];
+                    amtEl.innerHTML = amt;
+                    if(showPcnt){
+                        pcnt = Math.round(amt/ofObs.length*100);
+                        pcntEl.innerHTML = pcnt;
+                        $("#percent").removeClass("hide");
                     }
                     else {
-                        $("#statsDisp").removeClass("hide");
-                        $("#feedback").addClass("hide");
-                        amt = obs.length;
-                        first = obs[0];
-                        last = obs[obs.length-1];
-                        amtEl.innerHTML = amt;
-                        if(showPcnt){
-                            pcnt = Math.round(amt/ofObs.length*100);
-                            pcntEl.innerHTML = pcnt;
-                            $("#percent").removeClass("hide");
-                        }
-                        else {
-                            $("#percent").addClass("hide");
-                        }
-                        firstDateEl.innerHTML = first.date.dmy;
-                        firstTimeEl.innerHTML = first.time.time;
-                        lastDateEl.innerHTML = last.date.dmy;
-                        lastTimeEl.innerHTML = last.time.time;
-                    } 
+                        $("#percent").addClass("hide");
+                    }
+                    firstDateEl.innerHTML = first.date.dmy;
+                    firstTimeEl.innerHTML = first.time.time;
+                    lastDateEl.innerHTML = last.date.dmy;
+                    lastTimeEl.innerHTML = last.time.time;
                 }
 
                 function searchStats(ofObs){
@@ -281,13 +368,22 @@
                         statObs = getTargetObs(ofObs,d,m,y);
                         showPcnt = true;
                     }
-                    var limitHist = document.getElementById("limitHist").checked;
-                    updateStats(statObs,ofObs,showPcnt);
-                    if(limitHist){
-                        printObs(statObs);
+                    if(statObs.length < 1){
+                        $("#statsDisp").addClass("hide");
+                        document.getElementById("feedback").innerHTML = "Det ble ikke observert noen fugler som tilfredsstiller søket ditt.";
+                        $("#feedback").removeClass("hide");
                     }
                     else {
-                        printObs(allObs);
+                        $("#feedback").addClass("hide");
+                        var limitHist = document.getElementById("limitHist").checked;
+                        updateStats(statObs,ofObs,showPcnt);
+                        if(limitHist){
+                            curObs = statObs;
+                        }
+                        else {
+                            curObs = allObs;
+                        }
+                        handlePrinting(curObs,curDisp);
                     }
                 }
 
@@ -299,16 +395,17 @@
                 // ---- FIL-/JSON-BEHANDLING ----
 
                 function handleJSON(jsonObs) {
-                    for(var i = 0; i < jsonObs.length-1; i++){
+                    for(var i = jsonObs.length-2; i >= 0; i--){
                         obj = jsonObs[i];
                         var dateTime = handleDate(obj.metadata.time);
                         var date = dateTime.date;
                         var time = dateTime.time;
                         newObs(date,time,"height","more??");
                     }
-                    addYearOpts(allObs[0].date.y);
+                    addYearOpts(allObs[allObs.length-1].date.y);
+                    curObs = allObs;
+                    perPageChange(curObs);
                     searchStats(allObs);
-                    printObs(allObs);
                 }
 
                 function decodeJSON(jsonArr) {
@@ -330,7 +427,7 @@
                     var txt = '';
                     var xmlhttp = new XMLHttpRequest();
                     xmlhttp.onreadystatechange = function(){
-                      if(xmlhttp.status == 200 && xmlhttp.readyState == 4){
+                      if(xmlhttp.status == 200 && xmlhttp.readyState == 4){  // status 200 = "OK", readyState 4 = "request finished and response is ready"
                         txt = xmlhttp.responseText;  // Lagrer rein tekst fra fila i txt-variabelen
                         jsonArr = txt.split("\n");  // jsonArr blir nå et array hvor hver linje i tekstfila blir et eget element (i datalog-fila er hver linje et nytt JSON-objekt)
                         handleJSON(decodeJSON(jsonArr));
