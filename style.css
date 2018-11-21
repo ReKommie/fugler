@@ -1,0 +1,115 @@
+/* TAGS */
+* {
+      font-family: "Century Gothic",sans-serif;
+}
+
+body {
+      background-color: #EFEFEF;
+      margin: 0; text-align: center;
+}
+
+input {
+      font-size: 15px;
+}
+
+input[type=number] {
+      width: 40px;
+}
+
+/* CLASSES */
+.hide {
+      display: none;
+}
+
+.div {
+      margin-bottom: 50px;
+}
+
+.statOp {
+      display: inline;
+}
+
+.stat {
+      font-weight: bold;
+}
+
+
+/* IDs */
+#content {
+      width: 100%;
+      margin: auto;
+      overflow: hidden;
+}
+
+#titleBox {
+      background-color: white;
+      padding: 5px;
+      width: 100%;
+      margin: 0;
+}
+
+#logo {
+      height: 40px;
+}
+
+#title {
+      display: inline;
+}
+
+#menu li {
+      list-style-type: none;
+      margin: 0;
+      display: inline;
+      margin-right: 80px;
+}
+
+#menu a {
+      font-size: 1.5em;
+      text-decoration: none;
+      color: #464646;
+      border-radius: 5px;
+      padding: 10px;
+}
+
+#menu a:hover {
+      background-color: #EFEFEF;
+      color: black;
+      transition-duration: 0.3s;
+}
+
+#frontPage {
+      width: 100%;
+}
+
+#frontPic {
+      width: 100%;
+}
+
+#main {
+      width: 80%;
+      margin: auto;
+}
+
+#main p {
+      font-size: 1.2em;
+}
+
+#statSearch span {
+      margin-left: 20px;
+}
+
+#historikk_table {
+      width: 600px;
+      margin: auto;
+}
+
+#infoRow {
+      font-weight: bold;
+}
+
+#bottomLogo {
+      position: fixed;
+      bottom: 0;
+      right: 10px;
+      height: 50px;
+}
