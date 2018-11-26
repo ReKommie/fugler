@@ -376,7 +376,6 @@ $(document).ready(function() {
                 }
             }
         }
-        console.log(strYears);
         var plotData = [{
             x: strYears,
             y: yearOcc,
@@ -394,32 +393,6 @@ $(document).ready(function() {
     }
 
     function plot(d,m,y,obs){
-        /*if(y == ""){
-            if(m == "" && d == ""){
-                //plot years
-            }
-            else{
-                //no graph
-            }
-        }
-        else{  // y is set
-            if(m == ""){
-                if(d == ""){
-                    //plot year
-                }
-                else{  // d is set, m is not, y is
-                    //no graph
-                }
-            }
-            else{  // m is set
-                if(d == ""){
-                    // plot month
-                }
-                else{ // d is set, m is, y is
-                    // plot day
-                }
-            }
-        }*/
         var data;
         if(d != ""){
             data = plotDay(obs);
