@@ -1,5 +1,3 @@
-Filer skrevet av Sara Roberg Ghabeli (kodeape): `index.html`, `script.js`, `style.css`, `save_data.php` 
-
 <b>Rask innføring i klasser/objekter av Sara Roberg Ghabeli</b>
 
 Et objekt er en samling av egenskaper (variabler) og metoder (funksjoner). Objekter ligger nært sånn vi oppfatter virkeligheten. La oss ta eksempel i en radio. Den har noen egenskaper: en størrelse, et materiale, maks volum, strømforbruk osv. Samtidig kan den også gjøre ting vi at vi interagerer med den: vi kan skru den på, endre volum, skifte kanal osv. Slik kunne vi skrevet objektet radio i javaScript:
@@ -90,7 +88,7 @@ var radio2 = new Radio(30,1299,500);
 Objektet radio2 har nå størrelse 30, pris 1299 og maksVolum 500, volum satt til halve maksvolumet (250), og metoden volumOpp.
 
 
-I script.js lagrer jeg alle objekter av en klasse i arrays (det samme som lister i Python):
+I `script.js` lagrer jeg alle objekter av en klasse i arrays (det samme som lister i Python):
 
 ```
 var radioer = [radio1, radio2];
