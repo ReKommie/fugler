@@ -1,4 +1,6 @@
-Rask innføring i klasser/objekter
+Obs: kun 
+
+<b>Rask innføring i klasser/objekter av Sara Roberg Ghabeli</b>
 
 Et objekt er en samling av egenskaper (variabler) og metoder (funksjoner). Objekter ligger nært sånn vi oppfatter virkeligheten. La oss ta eksempel i en radio. Den har noen egenskaper: en størrelse, et materiale, maks volum, strømforbruk osv. Samtidig kan den også gjøre ting vi at vi interagerer med den: vi kan skru den på, endre volum, skifte kanal osv. Slik kunne vi skrevet objektet radio i javaScript:
 
