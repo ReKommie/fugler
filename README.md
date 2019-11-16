@@ -5,21 +5,15 @@ Et objekt er en samling av egenskaper (variabler) og metoder (funksjoner). Objek
 
 
 		var radio = {
-
 			størrelse: 45,
 			pris: 599,
-
 			volum: 50,
-
 			maksVolum: 100,
 			volumOpp: function() {
-
 				if(volum < maksVolum){
-
-				this.volum++;
-
+					this.volum++;
+				}
 			}
-
 		}
 
 
@@ -28,7 +22,6 @@ Et objekt er en samling av egenskaper (variabler) og metoder (funksjoner). Objek
 Her er eksempel på hvordan koden ville fungert:
 
 		radio.størrelse;
-
 		>  45
 
 		radio.volum;
@@ -37,7 +30,6 @@ Her er eksempel på hvordan koden ville fungert:
 		radio.volumOpp();
 
 		radio.volum;
-
 		>  51
 
 		radio.volum = 100;
@@ -49,21 +41,14 @@ Klasser er en oppskrift på et objekt, hvor egenskapene og metodene er de samme 
 
 		function Radio(størrelse,pris,maksVolum) {
 			this.størrelse = størrelse;
-
 			this.pris = pris;
-
 			this.maksVolum = maksVolum;
-
 			this.volum = this.maksVolum / 2;
-
 			this.volumOpp = function() {
-
 				if(volum < maksVolum){
-
-				this.volum++;
-
+					this.volum++;
+				}
 			}
-
 		}
 
 
@@ -79,16 +64,13 @@ Denne variabelen er nå et objekt med størrelse 45, pris 599 og maksVolum 100, 
 
 
 		radio.størrelse;
-
 		>  45
 
 		radio.volum;
 		>  50
 
 		radio.volumOpp();
-
 		radio.volum;
-
 		>  51
 
 		radio.volum = 100;
